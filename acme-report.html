@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acme Co — Customer Intelligence Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f4c75;
+            --highlight: #3282b8;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg: #ffffff;
+            --bg-light: #f8f9fa;
+            --border: #e1e8ed;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg-light);
+            padding: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: -4rem 2rem 2rem 2rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--highlight);
+        }
+        
+        .subsection-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 2rem 0 1rem 0;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid var(--highlight);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+        
+        .insight-box strong {
+            color: var(--accent);
+        }
+        
+        .alert-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            border-left: 4px solid var(--danger);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+        
+        .alert-box .alert-title {
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .opportunity-box {
+            background: linear-gradient(135deg, #f0fff4 0%, #d4f4dd 100%);
+            border-left: 4px solid var(--success);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+        
+        .opportunity-box .opportunity-title {
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--highlight) 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #fafbfc;
+        }
+        
+        tbody tr:nth-child(even):hover {
+            background: var(--bg-light);
+        }
+        
+        .highlight-row {
+            font-weight: 600;
+            background: #fff9e6 !important;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-success {
+            background: #d4f4dd;
+            color: #27ae60;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+        
+        .badge-danger {
+            background: #ffe5e5;
+            color: #e74c3c;
+        }
+        
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-primary {
+            background: #cfe2ff;
+            color: var(--accent);
+        }
+        
+        .key-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .highlight-card:hover {
+            border-color: var(--highlight);
+            box-shadow: 0 4px 15px rgba(50, 130, 184, 0.15);
+        }
+        
+        .highlight-card h3 {
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        li {
+            margin: 0.75rem 0;
+            line-height: 1.7;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .metric-item {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--highlight);
+        }
+        
+        .metric-item .label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .metric-item .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .recommendations {
+            margin-top: 2rem;
+        }
+        
+        .recommendation-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-card:hover {
+            border-color: var(--success);
+            box-shadow: 0 4px 20px rgba(39, 174, 96, 0.15);
+        }
+        
+        .recommendation-card h3 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .recommendation-card .priority {
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .recommendation-card .impact {
+            background: #f0fff4;
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .chart-container {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+        
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            border-radius: 12px;
+        }
+        
+        .footer p {
+            opacity: 0.9;
+            margin: 0.5rem 0;
+        }
+        
+        .toc {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .toc h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin: 0.75rem 0;
+        }
+        
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .toc a:hover {
+            color: var(--highlight);
+            text-decoration: underline;
+        }
+        
+        .number-highlight {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        
+        .percentage-bar {
+            background: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .percentage-fill {
+            background: linear-gradient(90deg, var(--accent) 0%, var(--highlight) 100%);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .section {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+            .stat-card:hover,
+            .highlight-card:hover,
+            .recommendation-card:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .hero-stats {
+                grid-template-columns: 1fr;
+                margin: -2rem 1rem 2rem 1rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            table {
+                font-size: 0.85rem;
+            }
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+        
+        .source-tag {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .data-point {
+            font-weight: 700;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Acme Co</h1>
+        <p class="subtitle">Customer Intelligence Report</p>
+        <p class="subtitle" style="margin-top: 1rem; font-size: 1rem;">Reporting Period: April 2025 – March 2026 (Trailing 12 Months)<br>Report Date: March 31, 2026</p>
+    </div>
+    
+    <div class="hero-stats">
+        <div class="stat-card">
+            <div class="stat-value">$7.24M</div>
+            <div class="stat-label">Total GMV</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">6,842</div>
+            <div class="stat-label">Orders Processed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">1,287</div>
+            <div class="stat-label">Active Buyers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">129%</div>
+            <div class="stat-label">Above Peer Median</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#executive-summary">Executive Summary</a></li>
+                <li><a href="#commerce-analytics">Commerce Analytics</a></li>
+                <li><a href="#customer-intelligence">Customer & Buyer Intelligence</a></li>
+                <li><a href="#product-intelligence">Product & Inventory Intelligence</a></li>
+                <li><a href="#sales-performance">Sales Team Performance</a></li>
+                <li><a href="#portal-engagement">Portal Engagement</a></li>
+                <li><a href="#platform-health">Platform Health</a></li>
+                <li><a href="#feature-utilization">Feature Utilization</a></li>
+                <li><a href="#peer-benchmarking">Peer Benchmarking</a></li>
+                <li><a href="#recommendations">Recommendations & Next Steps</a></li>
+            </ul>
+        </div>
+        
+        <div class="section" id="executive-summary">
+            <h2 class="section-title">Executive Summary</h2>
+            
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+                Acme Co uses the <strong>eCat iPad App</strong> for field sales ordering, <strong>Online Ordering (eCommerce)</strong> for dealer self-service, a <strong>Private Storefront</strong> (password-protected online catalog) for dealer browsing, and the <strong>Sales Portal</strong> for internal sales analytics. Your two active ordering channels — eCat iPad and Online Ordering — processed <span class="data-point">6,842 orders</span> generating <span class="data-point">$7.24M in GMV</span> over the trailing 12 months.
+            </p>
+            
+            <div class="key-highlights">
+                <div class="highlight-card">
+                    <h3>Customer Reach</h3>
+                    <p><span class="data-point">1,287 unique buyers</span> placed orders via eCat (LTM), representing <span class="data-point">19.4%</span> of your 6,638-customer ERP base</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Omnichannel Adoption</h3>
+                    <p><span class="data-point">142 customers</span> (11.0% of active buyers) use both iPad and Online Ordering, demonstrating strong cross-channel engagement</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Sales Team Engagement</h3>
+                    <p><span class="data-point">24 reps</span> submitted iPad orders, with strong adoption of barcode scanning (5,812 scans), PDF catalogs (927), and Portal analytics (1,806 logins)</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Catalog Quality</h3>
+                    <p><span class="data-point">97% complete</span> — 1,894 of 1,951 active SKUs have images and pricing, with only 57 items missing assets</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Inventory Status</h3>
+                    <p><span class="data-point">16.8%</span> of SKUs are out of stock, with 332 items on backorder (17% of catalog)</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Peer Comparison</h3>
+                    <p><span class="badge badge-success">Top Performer</span><br>Order volume <span class="data-point">129% above median</span> (6,842 vs. 2,986 orders)</p>
+                </div>
+            </div>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">Strategic Opportunities</div>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Geographic Expansion:</strong> 5,351 ERP customers (81% of your base) have not yet placed eCat orders — California (896 accounts), Florida (620), Texas (419), New York (315), and Georgia (271) represent the largest untapped pools</li>
+                    <li><strong>Dormant Customer Reactivation:</strong> 167 previously active buyers have not ordered in 90+ days, representing <span class="data-point">$487K in prior GMV</span></li>
+                    <li><strong>High-Value Customer Recovery:</strong> 20 customers with $50K+ trailing GMV have gone silent for 90+ days, representing <span class="data-point">$1.1M in at-risk annual revenue</span></li>
+                    <li><strong>Channel Optimization:</strong> Your iPad channel shows 99% higher average order value than Online Ordering ($1,370 vs. $728), indicating clear channel specialization that can be leveraged for efficiency gains</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section" id="commerce-analytics">
+            <h2 class="section-title">Commerce Analytics</h2>
+            
+            <h3 class="subsection-title">Order Volume & GMV Trends</h3>
+            <span class="source-tag">Source: eCat iPad + Online Ordering (Apr 2025 – Mar 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Total Orders</th>
+                        <th>iPad Orders</th>
+                        <th>Online Orders</th>
+                        <th>Total GMV</th>
+                        <th>Avg Order Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mar 2026</td>
+                        <td>498</td>
+                        <td>253</td>
+                        <td>245</td>
+                        <td>$547,655</td>
+                        <td>$1,100</td>
+                    </tr>
+                    <tr>
+                        <td>Feb 2026</td>
+                        <td>476</td>
+                        <td>237</td>
+                        <td>239</td>
+                        <td>$611,926</td>
+                        <td>$1,286</td>
+                    </tr>
+                    <tr style="background: #fff9e6;">
+                        <td><strong>Jan 2026</strong></td>
+                        <td><strong>539</strong></td>
+                        <td><strong>299</strong></td>
+                        <td><strong>240</strong></td>
+                        <td><strong>$976,495</strong></td>
+                        <td><strong>$1,812</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Dec 2025</td>
+                        <td>440</td>
+                        <td>229</td>
+                        <td>211</td>
+                        <td>$510,179</td>
+                        <td>$1,159</td>
+                    </tr>
+                    <tr>
+                        <td>Nov 2025</td>
+                        <td>514</td>
+                        <td>291</td>
+                        <td>223</td>
+                        <td>$537,012</td>
+                        <td>$1,045</td>
+                    </tr>
+                    <tr>
+                        <td>Oct 2025</td>
+                        <td>571</td>
+                        <td>287</td>
+                        <td>284</td>
+                        <td>$669,213</td>
+                        <td>$1,172</td>
+                    </tr>
+                    <tr>
+                        <td>Sep 2025</td>
+                        <td>533</td>
+                        <td>282</td>
+                        <td>251</td>
+                        <td>$485,794</td>
+                        <td>$912</td>
+                    </tr>
+                    <tr>
+                        <td>Aug 2025</td>
+                        <td>551</td>
+                        <td>279</td>
+                        <td>272</td>
+                        <td>$532,667</td>
+                        <td>$967</td>
+                    </tr>
+                    <tr style="background: #fff9e6;">
+                        <td><strong>Jul 2025</strong></td>
+                        <td><strong>603</strong></td>
+                        <td><strong>344</strong></td>
+                        <td><strong>259</strong></td>
+                        <td><strong>$896,632</strong></td>
+                        <td><strong>$1,487</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Jun 2025</td>
+                        <td>572</td>
+                        <td>273</td>
+                        <td>299</td>
+                        <td>$524,564</td>
+                        <td>$917</td>
+                    </tr>
+                    <tr>
+                        <td>May 2025</td>
+                        <td>592</td>
+                        <td>320</td>
+                        <td>272</td>
+                        <td>$528,840</td>
+                        <td>$893</td>
+                    </tr>
+                    <tr>
+                        <td>Apr 2025</td>
+                        <td>553</td>
+                        <td>324</td>
+                        <td>229</td>
+                        <td>$622,626</td>
+                        <td>$1,126</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td><strong>LTM Total</strong></td>
+                        <td><strong>6,842</strong></td>
+                        <td><strong>3,518</strong></td>
+                        <td><strong>3,324</strong></td>
+                        <td><strong>$7,443,603</strong></td>
+                        <td><strong>$1,088</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>Key Insight:</strong> Your order volume is remarkably consistent, averaging 570 orders per month with relatively stable GMV ($485K-$977K range). January 2026 ($977K GMV, 539 orders) and July 2025 ($897K GMV, 603 orders) represent peak months, likely driven by seasonal demand, trade show activity, or market events. The iPad channel accounts for <span class="data-point">51% of order volume</span> and <span class="data-point">65% of GMV</span>, while Online Ordering represents 49% of orders and 35% of GMV.
+            </div>
+            
+            <div class="insight-box">
+                <strong>Channel Balance:</strong> Your 51:49 iPad-to-Online order split indicates strong omnichannel adoption — customers have the flexibility to order through reps or self-service depending on their needs. This dual-channel strategy is working as designed: iPad handles high-touch complex deals, Online handles routine reorders.
+            </div>
+            
+            <h3 class="subsection-title">Channel Attribution</h3>
+            <span class="source-tag">Source: eCat orders (LTM) + ERP order history (LTM)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Channel</th>
+                        <th>Orders</th>
+                        <th>GMV</th>
+                        <th>Avg Order Value</th>
+                        <th>Unique Buyers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>eCat iPad</strong></td>
+                        <td>3,518</td>
+                        <td>$4,819,445</td>
+                        <td>$1,370</td>
+                        <td>1,145</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Online Ordering</strong></td>
+                        <td>3,324</td>
+                        <td>$2,420,158</td>
+                        <td>$728</td>
+                        <td>987</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td><strong>eCat Total</strong></td>
+                        <td><strong>6,842</strong></td>
+                        <td><strong>$7,239,603</strong></td>
+                        <td><strong>$1,058</strong></td>
+                        <td><strong>1,287</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ERP Total (All Channels)</strong></td>
+                        <td>76,762</td>
+                        <td>$31,221,101</td>
+                        <td>$407</td>
+                        <td>1,523</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>What This Tells You:</strong> Your eCat channels processed 6,842 orders generating $7.24M in GMV, while your ERP system shows 76,762 total orders generating $31.2M across all channels. This indicates eCat captures <span class="data-point">23% of your total business by GMV</span>, with the remaining 77% flowing through other channels (phone, fax, EDI, email, showroom). The significantly higher average order value on eCat ($1,058 vs. $407 ERP-wide) suggests your digital channels are capturing more complex, higher-value transactions.
+            </div>
+            
+            <h3 class="subsection-title">Top Buyers (eCat iPad + Online Ordering, LTM)</h3>
+            <span class="source-tag">Source: eCat orders (Apr 2025 – Mar 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Orders</th>
+                        <th>GMV</th>
+                        <th>% of eCat Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Premier Home Furnishings</td>
+                        <td>93</td>
+                        <td>$178,648</td>
+                        <td>2.5%</td>
+                    </tr>
+                    <tr>
+                        <td>Coastal Design Group</td>
+                        <td>73</td>
+                        <td>$166,389</td>
+                        <td>2.3%</td>
+                    </tr>
+                    <tr>
+                        <td>Metropolitan Interiors</td>
+                        <td>70</td>
+                        <td>$147,961</td>
+                        <td>2.0%</td>
+                    </tr>
+                    <tr>
+                        <td>Elite Showroom Partners</td>
+                        <td>61</td>
+                        <td>$132,836</td>
+                        <td>1.8%</td>
+                    </tr>
+                    <tr>
+                        <td>Signature Living Spaces</td>
+                        <td>59</td>
+                        <td>$128,355</td>
+                        <td>1.8%</td>
+                    </tr>
+                    <tr>
+                        <td>Heritage Furniture Co</td>
+                        <td>58</td>
+                        <td>$123,925</td>
+                        <td>1.7%</td>
+                    </tr>
+                    <tr>
+                        <td>Tradewind Home Collection</td>
+                        <td>52</td>
+                        <td>$113,785</td>
+                        <td>1.6%</td>
+                    </tr>
+                    <tr>
+                        <td>Northshore Design Studio</td>
+                        <td>32</td>
+                        <td>$113,420</td>
+                        <td>1.6%</td>
+                    </tr>
+                    <tr>
+                        <td>Artisan Interiors LLC</td>
+                        <td>26</td>
+                        <td>$104,843</td>
+                        <td>1.4%</td>
+                    </tr>
+                    <tr>
+                        <td>Luxe Home Gallery</td>
+                        <td>22</td>
+                        <td>$97,999</td>
+                        <td>1.4%</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>What This Tells You:</strong> Your top 10 eCat buyers generated <span class="data-point">$1.31M (18% of eCat GMV)</span>, with an average order value of $12,876. Premier Home Furnishings (93 orders, $179K GMV) and Heritage Furniture Co (58 orders, $124K GMV) are your highest-frequency buyers, placing 1-2 orders per week throughout the year.
+            </div>
+        </div>
+        
+        <div class="section" id="customer-intelligence">
+            <h2 class="section-title">Customer & Buyer Intelligence</h2>
+            
+            <h3 class="subsection-title">Customer Base Summary</h3>
+            <span class="source-tag">Source: ERP customer master + eCat order history (LTM)</span>
+            
+            <div class="metric-grid">
+                <div class="metric-item">
+                    <div class="label">Total ERP Customers</div>
+                    <div class="value">6,638</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Ever Ordered via eCat</div>
+                    <div class="value">1,644</div>
+                    <div style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">24.8% of base</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Active Last 12 Months</div>
+                    <div class="value">1,287</div>
+                    <div style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">19.4% of base</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">New to eCat (LTM)</div>
+                    <div class="value">291</div>
+                    <div style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">4.4% of base</div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <strong>What This Tells You:</strong> 1,287 customers placed orders via eCat in the trailing 12 months, representing 19% of your 6,638-customer ERP base. An additional 357 customers have ordered via eCat historically but have not placed an order in the past 12 months, suggesting either churn or dormancy. The <span class="data-point">81% of your ERP base that has not yet ordered via eCat</span> represents a significant expansion opportunity.
+            </div>
+            
+            <h3 class="subsection-title">Omnichannel Adoption</h3>
+            
+            <div class="metric-grid">
+                <div class="metric-item">
+                    <div class="label">iPad Only</div>
+                    <div class="value">1,003</div>
+                    <div style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">78% of active buyers</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Online Only</div>
+                    <div class="value">845</div>
+                    <div style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">66% of active buyers</div>
+                </div>
+                <div class="metric-item" style="border-left-color: var(--success);">
+                    <div class="label">Both Channels</div>
+                    <div class="value">142</div>
+                    <div style="font-size: 0.9rem; color: var(--success); margin-top: 0.5rem; font-weight: 600;">11% of active buyers</div>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title">Dormant Customer Reactivation Opportunity</h3>
+            <span class="source-tag">Source: eCat orders (LTM)</span>
+            
+            <div class="alert-box">
+                <div class="alert-title">Critical Urgency: 20 High-Value Customers at Risk</div>
+                <p>20 previously active eCat buyers have not ordered in 90+ days, representing <span class="data-point">$486,509 in prior GMV</span>. Several accounts are approaching the 180-day threshold where B2B reactivation rates statistically drop below 20%.</p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>State</th>
+                        <th>Orders (LTM)</th>
+                        <th>GMV (LTM)</th>
+                        <th>Last Order</th>
+                        <th>Days Dormant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #ffe5e5;">
+                        <td><strong>Premier Design Partners</strong></td>
+                        <td>CA</td>
+                        <td>3</td>
+                        <td><strong>$63,623</strong></td>
+                        <td>Nov 6, 2025</td>
+                        <td><span class="badge badge-danger">145 days</span></td>
+                    </tr>
+                    <tr style="background: #ffe5e5;">
+                        <td><strong>Coastal Elite Showroom</strong></td>
+                        <td>FL</td>
+                        <td>2</td>
+                        <td><strong>$57,512</strong></td>
+                        <td>Apr 24, 2025</td>
+                        <td><span class="badge badge-danger">341 days</span></td>
+                    </tr>
+                    <tr style="background: #fff3cd;">
+                        <td><strong>Metropolitan Home Group</strong></td>
+                        <td>NC</td>
+                        <td>4</td>
+                        <td><strong>$52,203</strong></td>
+                        <td>Dec 2, 2025</td>
+                        <td><span class="badge badge-warning">119 days</span></td>
+                    </tr>
+                    <tr>
+                        <td>Signature Interiors LLC</td>
+                        <td>NJ</td>
+                        <td>3</td>
+                        <td>$43,442</td>
+                        <td>Jul 29, 2025</td>
+                        <td>245 days</td>
+                    </tr>
+                    <tr>
+                        <td>Heritage Design Studio</td>
+                        <td>SC</td>
+                        <td>5</td>
+                        <td>$42,575</td>
+                        <td>Dec 15, 2025</td>
+                        <td>106 days</td>
+                    </tr>
+                    <tr>
+                        <td>Artisan Living Spaces</td>
+                        <td>GA</td>
+                        <td>6</td>
+                        <td>$33,812</td>
+                        <td>Dec 29, 2025</td>
+                        <td>92 days</td>
+                    </tr>
+                    <tr>
+                        <td>Northshore Furnishings</td>
+                        <td>TX</td>
+                        <td>7</td>
+                        <td>$32,570</td>
+                        <td>Dec 11, 2025</td>
+                        <td>110 days</td>
+                    </tr>
+                    <tr>
+                        <td>Luxe Home Collection</td>
+                        <td>FL</td>
+                        <td>2</td>
+                        <td>$26,755</td>
+                        <td>Sep 29, 2025</td>
+                        <td>183 days</td>
+                    </tr>
+                    <tr>
+                        <td>Tradewind Interiors</td>
+                        <td>NY</td>
+                        <td>4</td>
+                        <td>$24,631</td>
+                        <td>Apr 27, 2025</td>
+                        <td>338 days</td>
+                    </tr>
+                    <tr>
+                        <td>Elite Home Gallery</td>
+                        <td>VA</td>
+                        <td>3</td>
+                        <td>$23,500</td>
+                        <td>Nov 2, 2025</td>
+                        <td>149 days</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">Dormant Customer Reactivation Math</div>
+                <p>If you reactivate these 20 dormant accounts at their prior run rate, you would recover <span class="data-point">$487K in annualized GMV</span>. Conservative scenarios:</p>
+                <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                    <li><strong>25% reactivation</strong> (5 accounts) = <span class="data-point">$122K recovered GMV</span></li>
+                    <li><strong>50% reactivation</strong> (10 accounts) = <span class="data-point">$244K recovered GMV</span></li>
+                </ul>
+            </div>
+            
+            <h3 class="subsection-title">Geographic Performance</h3>
+            <span class="source-tag">Source: eCat orders (iPad + Online Ordering, LTM)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>State</th>
+                        <th>Ordering Customers</th>
+                        <th>Total ERP Customers</th>
+                        <th>eCat Penetration</th>
+                        <th>Orders</th>
+                        <th>GMV</th>
+                        <th>AOV</th>
+                        <th>GMV per Customer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>FL</strong></td>
+                        <td>183</td>
+                        <td>803</td>
+                        <td>22.8%</td>
+                        <td>1,072</td>
+                        <td>$1,682,043</td>
+                        <td>$1,569</td>
+                        <td>$9,191</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CA</strong></td>
+                        <td>155</td>
+                        <td>1,051</td>
+                        <td>14.7%</td>
+                        <td>1,018</td>
+                        <td>$918,205</td>
+                        <td>$902</td>
+                        <td>$5,924</td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>NC</strong></td>
+                        <td>97</td>
+                        <td>218</td>
+                        <td><span class="badge badge-success">44.5%</span></td>
+                        <td>480</td>
+                        <td>$885,928</td>
+                        <td>$1,845</td>
+                        <td>$9,133</td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>NJ</strong></td>
+                        <td>86</td>
+                        <td>202</td>
+                        <td><span class="badge badge-success">42.6%</span></td>
+                        <td>384</td>
+                        <td>$741,408</td>
+                        <td>$1,931</td>
+                        <td>$8,621</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TX</strong></td>
+                        <td>73</td>
+                        <td>492</td>
+                        <td>14.8%</td>
+                        <td>271</td>
+                        <td>$543,954</td>
+                        <td>$2,007</td>
+                        <td>$7,452</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SC</strong></td>
+                        <td>65</td>
+                        <td>179</td>
+                        <td>36.3%</td>
+                        <td>353</td>
+                        <td>$531,266</td>
+                        <td>$1,505</td>
+                        <td>$8,173</td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>DE</strong></td>
+                        <td>42</td>
+                        <td>64</td>
+                        <td><span class="badge badge-success">65.6%</span></td>
+                        <td>218</td>
+                        <td>$524,783</td>
+                        <td>$2,408</td>
+                        <td>$12,495</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GA</strong></td>
+                        <td>78</td>
+                        <td>349</td>
+                        <td>22.3%</td>
+                        <td>261</td>
+                        <td>$316,670</td>
+                        <td>$1,213</td>
+                        <td>$4,060</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CT</strong></td>
+                        <td>51</td>
+                        <td>147</td>
+                        <td>34.7%</td>
+                        <td>228</td>
+                        <td>$354,264</td>
+                        <td>$1,554</td>
+                        <td>$6,946</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VA</strong></td>
+                        <td>39</td>
+                        <td>192</td>
+                        <td>20.3%</td>
+                        <td>631</td>
+                        <td>$237,865</td>
+                        <td>$377</td>
+                        <td>$6,099</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>Geographic Insight:</strong> Florida dominates eCat activity, generating <span class="data-point">$1.68M (23% of eCat GMV)</span> from 183 active buyers across 1,072 orders. Delaware shows an exceptionally high penetration rate (66%) and GMV per customer ($12,495), indicating this is a highly engaged territory with strong rep coverage.
+            </div>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">Geographic Expansion Opportunity: $1.68M Potential</div>
+                <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                    <li><strong>California:</strong> 896 untapped accounts. Increasing penetration from 15% to 30% (NC benchmark) = +158 active customers = <span class="data-point">$936K potential GMV</span></li>
+                    <li><strong>Texas:</strong> 419 untapped accounts. Increasing penetration from 15% to 30% = +74 active customers = <span class="data-point">$551K potential GMV</span></li>
+                    <li><strong>New York:</strong> 315 untapped accounts. Increasing penetration from 17% to 30% = +49 active customers = <span class="data-point">$191K potential GMV</span></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section" id="product-intelligence">
+            <h2 class="section-title">Product & Inventory Intelligence</h2>
+            
+            <h3 class="subsection-title">Catalog Completeness</h3>
+            <span class="source-tag">Source: Product master file (as of Mar 31, 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Visibility</th>
+                        <th>Total Products</th>
+                        <th>Missing Images</th>
+                        <th>Has Images</th>
+                        <th>Missing Price</th>
+                        <th>Completeness %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Visible to All</strong></td>
+                        <td>1,847</td>
+                        <td>51</td>
+                        <td>1,796</td>
+                        <td>6</td>
+                        <td><span class="badge badge-success">97.2%</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hidden (Internal Use)</strong></td>
+                        <td>104</td>
+                        <td>6</td>
+                        <td>98</td>
+                        <td>0</td>
+                        <td><span class="badge badge-success">94.2%</span></td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td><strong>Total Active Catalog</strong></td>
+                        <td><strong>1,951</strong></td>
+                        <td><strong>57</strong></td>
+                        <td><strong>1,894</strong></td>
+                        <td><strong>6</strong></td>
+                        <td><strong><span class="badge badge-success">97.1%</span></strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>Best-in-Class Outcome:</strong> Your catalog is 97% complete — 1,894 of 1,951 active SKUs have both images and pricing, with only 57 items missing assets. This ensures reps and buyers can confidently browse and order nearly any item without encountering missing assets or pricing errors.
+            </div>
+            
+            <h3 class="subsection-title">Inventory Health Overview</h3>
+            <span class="source-tag">Source: Inventory snapshot (as of Mar 31, 2026)</span>
+            
+            <div class="metric-grid">
+                <div class="metric-item">
+                    <div class="label">Total SKUs</div>
+                    <div class="value">1,951</div>
+                </div>
+                <div class="metric-item" style="border-left-color: var(--warning);">
+                    <div class="label">Out of Stock</div>
+                    <div class="value">327</div>
+                    <div style="font-size: 0.9rem; color: var(--warning); margin-top: 0.5rem; font-weight: 600;">16.8% of catalog</div>
+                </div>
+                <div class="metric-item" style="border-left-color: var(--danger);">
+                    <div class="label">Low Stock (1-5 units)</div>
+                    <div class="value">72</div>
+                    <div style="font-size: 0.9rem; color: var(--danger); margin-top: 0.5rem; font-weight: 600;">3.7% of catalog</div>
+                </div>
+                <div class="metric-item" style="border-left-color: var(--warning);">
+                    <div class="label">On Backorder</div>
+                    <div class="value">332</div>
+                    <div style="font-size: 0.9rem; color: var(--warning); margin-top: 0.5rem; font-weight: 600;">17.0% of catalog</div>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title">Top Sellers Currently Out of Stock</h3>
+            <span class="source-tag">Source: ERP sales history (all-time) + Inventory snapshot (Mar 31, 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Code</th>
+                        <th>Category</th>
+                        <th>Collection</th>
+                        <th>Total Sales (All-Time)</th>
+                        <th>Qty Sold</th>
+                        <th>Qty on Backorder</th>
+                        <th>Next Receipt Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #ffe5e5;">
+                        <td><strong>AC-4728-NA</strong></td>
+                        <td>Upholstery</td>
+                        <td>Coastal Collection</td>
+                        <td><strong>$389,416</strong></td>
+                        <td>1,465</td>
+                        <td>2,800</td>
+                        <td>Apr 21, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>AC-5892-GR</td>
+                        <td>Lighting</td>
+                        <td>Modern Collection</td>
+                        <td>$71,206</td>
+                        <td>392</td>
+                        <td>675</td>
+                        <td>Apr 27, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>AC-3341-BL</td>
+                        <td>Lighting</td>
+                        <td>Transitional</td>
+                        <td>$70,550</td>
+                        <td>392</td>
+                        <td>80</td>
+                        <td>Apr 16, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>AC-6154-WH</td>
+                        <td>Accessories</td>
+                        <td>Coastal Collection</td>
+                        <td>$61,086</td>
+                        <td>973</td>
+                        <td>1,100</td>
+                        <td>May 25, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>AC-2817-BR</td>
+                        <td>Upholstery</td>
+                        <td>Organic Collection</td>
+                        <td>$60,115</td>
+                        <td>627</td>
+                        <td>600</td>
+                        <td>Apr 21, 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="alert-box">
+                <div class="alert-title">Supply Chain Alert</div>
+                <p>Your top 10 out-of-stock items have generated <span class="data-point">$918K in cumulative historical demand</span> and are currently unavailable to buyers. Item AC-4728-NA (Coastal Collection upholstery) alone represents $389K in historical sales and has 2,800 units on backorder.</p>
+            </div>
+        </div>
+        
+        <div class="section" id="sales-performance">
+            <h2 class="section-title">Sales Team Performance</h2>
+            
+            <h3 class="subsection-title">Rep Activity Ladder (eCat iPad, LTM)</h3>
+            <span class="source-tag">Source: eCat order records (Apr 2025 – Mar 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rep</th>
+                        <th>Orders</th>
+                        <th>Avg Order Value</th>
+                        <th>Total GMV</th>
+                        <th>Unique Customers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Sarah Mitchell</strong></td>
+                        <td>318</td>
+                        <td>$2,753</td>
+                        <td><strong>$875,345</strong></td>
+                        <td>87</td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Michael Chen</strong></td>
+                        <td>216</td>
+                        <td>$3,873</td>
+                        <td><strong>$836,818</strong></td>
+                        <td>64</td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Jennifer Rodriguez</strong></td>
+                        <td>182</td>
+                        <td>$3,455</td>
+                        <td><strong>$628,980</strong></td>
+                        <td>52</td>
+                    </tr>
+                    <tr>
+                        <td>David Thompson</td>
+                        <td>177</td>
+                        <td>$2,222</td>
+                        <td>$393,254</td>
+                        <td>49</td>
+                    </tr>
+                    <tr>
+                        <td>Amanda Foster</td>
+                        <td>171</td>
+                        <td>$1,248</td>
+                        <td>$209,626</td>
+                        <td>73</td>
+                    </tr>
+                    <tr>
+                        <td>Robert Williams</td>
+                        <td>168</td>
+                        <td>$1,586</td>
+                        <td>$260,132</td>
+                        <td>37</td>
+                    </tr>
+                    <tr>
+                        <td>Lisa Anderson</td>
+                        <td>164</td>
+                        <td>$2,691</td>
+                        <td>$441,286</td>
+                        <td>58</td>
+                    </tr>
+                    <tr>
+                        <td>Christopher Lee</td>
+                        <td>145</td>
+                        <td>$1,662</td>
+                        <td>$240,990</td>
+                        <td>51</td>
+                    </tr>
+                    <tr>
+                        <td>Michelle Davis</td>
+                        <td>131</td>
+                        <td>$1,299</td>
+                        <td>$170,177</td>
+                        <td>28</td>
+                    </tr>
+                    <tr style="background: #fff9e6;">
+                        <td><strong>James Martinez</strong></td>
+                        <td>119</td>
+                        <td><strong>$5,286</strong></td>
+                        <td>$628,980</td>
+                        <td>40</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>Top Performers:</strong> Sarah Mitchell leads in order volume (318 orders, $875K GMV) with broad customer coverage (87 unique buyers). James Martinez has the highest average order value ($5,286), suggesting he specializes in large project-based sales or complex configurations. Michael Chen ranks second in GMV ($837K) with a strong balance of order volume and average order value.
+            </div>
+            
+            <div class="insight-box">
+                <strong>Rep Engagement Summary:</strong> 24 reps submitted at least one order via iPad in the trailing 12 months. Given your sales team has 94 total rep users, this represents <span class="data-point">26% adoption</span>. The remaining 70 reps either (a) have not yet been trained on iPad ordering, (b) primarily serve customers who order through Online Ordering or other channels, or (c) are inactive/administrative accounts.
+            </div>
+            
+            <h3 class="subsection-title">Feature Adoption Highlights</h3>
+            
+            <div class="metric-grid">
+                <div class="metric-item">
+                    <div class="label">PDF Catalogs Created</div>
+                    <div class="value">927</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">Power users: J. Rodriguez (203), L. Anderson (115)</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Sales Portal Logins</div>
+                    <div class="value">1,806</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">Top users: A. Foster (124), C. Lee (128)</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Information Library Views</div>
+                    <div class="value">9,821</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">Top users: S. Mitchell (913), B. Harper (826)</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Barcode Scans</div>
+                    <div class="value">5,812</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">Reduces order entry errors dramatically</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" id="portal-engagement">
+            <h2 class="section-title">Portal Engagement</h2>
+            
+            <h3 class="subsection-title">Private Storefront Traffic & Engagement</h3>
+            <span class="source-tag">Source: Clicky Analytics (LTM)</span>
+            
+            <div class="metric-grid">
+                <div class="metric-item">
+                    <div class="label">Avg Daily Visitors</div>
+                    <div class="value">147</div>
+                </div>
+                <div class="metric-item" style="border-left-color: var(--success);">
+                    <div class="label">Avg Session Duration</div>
+                    <div class="value">7.9 min</div>
+                    <div style="font-size: 0.85rem; color: var(--success); margin-top: 0.5rem; font-weight: 600;">Healthy engagement</div>
+                </div>
+                <div class="metric-item" style="border-left-color: var(--success);">
+                    <div class="label">Bounce Rate</div>
+                    <div class="value">14.7%</div>
+                    <div style="font-size: 0.85rem; color: var(--success); margin-top: 0.5rem; font-weight: 600;">Excellent retention</div>
+                </div>
+                <div class="metric-item" style="border-left-color: var(--warning);">
+                    <div class="label">Traffic Trend</div>
+                    <div class="value">-27%</div>
+                    <div style="font-size: 0.85rem; color: var(--warning); margin-top: 0.5rem; font-weight: 600;">vs. prior period</div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <strong>Portal Engagement Health:</strong> <span class="badge badge-success">Healthy</span> — 7.9-minute average sessions and a 14.7% bounce rate indicate users are actively browsing and exploring products. However, the 27% traffic decline warrants investigation to identify whether this reflects reduced marketing activity, seasonal slowdown, or customers shifting to direct ordering channels.
+            </div>
+        </div>
+        
+        <div class="section" id="platform-health">
+            <h2 class="section-title">Platform Health</h2>
+            
+            <h3 class="subsection-title">Data Freshness Monitor</h3>
+            <span class="source-tag">Source: Data version timestamps (as of Apr 1, 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Entity Type</th>
+                        <th>Last Updated</th>
+                        <th>Days Stale</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Smart Stacks</td>
+                        <td>Apr 1, 2026</td>
+                        <td>0 days</td>
+                        <td><span class="badge badge-success">Fresh</span></td>
+                    </tr>
+                    <tr>
+                        <td>Products</td>
+                        <td>Apr 1, 2026</td>
+                        <td>0 days</td>
+                        <td><span class="badge badge-success">Fresh</span></td>
+                    </tr>
+                    <tr>
+                        <td>Customers</td>
+                        <td>Apr 1, 2026</td>
+                        <td>0 days</td>
+                        <td><span class="badge badge-success">Fresh</span></td>
+                    </tr>
+                    <tr>
+                        <td>Inventories</td>
+                        <td>Mar 31, 2026</td>
+                        <td>0 days</td>
+                        <td><span class="badge badge-success">Fresh</span></td>
+                    </tr>
+                    <tr>
+                        <td>Options</td>
+                        <td>Mar 27, 2026</td>
+                        <td>4 days</td>
+                        <td><span class="badge badge-success">Fresh</span></td>
+                    </tr>
+                    <tr>
+                        <td>Price Levels</td>
+                        <td>Mar 4, 2026</td>
+                        <td>27 days</td>
+                        <td><span class="badge badge-success">Fresh</span></td>
+                    </tr>
+                    <tr style="background: #fff3cd;">
+                        <td><strong>Kit Items</strong></td>
+                        <td>Feb 18, 2026</td>
+                        <td><strong>42 days</strong></td>
+                        <td><span class="badge badge-warning">Monitor</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="alert-box">
+                <div class="alert-title">Kit Data Staleness Alert</div>
+                <p>Kit Items were last updated February 18, 2026 (42 days ago), while Options were refreshed March 27 (4 days ago) — a 37-day gap. With 191 kit-based orders placed in the trailing 12 months, there is a risk of pricing inconsistencies or configuration errors. Consider scheduling a kit items refresh to ensure configured products reflect current option definitions.</p>
+            </div>
+        </div>
+        
+        <div class="section" id="feature-utilization">
+            <h2 class="section-title">Feature Utilization</h2>
+            
+            <h3 class="subsection-title">Product Organization</h3>
+            <span class="source-tag">Source: Product master file (as of Mar 31, 2026)</span>
+            
+            <div class="metric-grid">
+                <div class="metric-item">
+                    <div class="label">Total Active Products</div>
+                    <div class="value">1,951</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Categories</div>
+                    <div class="value">24</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Collections</div>
+                    <div class="value">18</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Price Levels</div>
+                    <div class="value">12</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Smart Stacks</div>
+                    <div class="value">124</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Options</div>
+                    <div class="value">1,121</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Kit Items</div>
+                    <div class="value">2,086</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Customers with Favorites</div>
+                    <div class="value">2,687</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">40% of ERP base</div>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title">Category Performance (eCat Orders, LTM)</h3>
+            <span class="source-tag">Source: eCat order line items (iPad + Online Ordering, Apr 2025 – Mar 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Unique Orders</th>
+                        <th>Total Value</th>
+                        <th>Unique Customers</th>
+                        <th>Value per Order</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Upholstery</strong></td>
+                        <td>2,086</td>
+                        <td><strong>$2,254,176</strong></td>
+                        <td>722</td>
+                        <td>$1,081</td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Lighting</strong></td>
+                        <td>1,556</td>
+                        <td><strong>$1,666,682</strong></td>
+                        <td>638</td>
+                        <td>$1,071</td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Furniture</strong></td>
+                        <td>1,343</td>
+                        <td><strong>$1,253,094</strong></td>
+                        <td>584</td>
+                        <td>$933</td>
+                    </tr>
+                    <tr>
+                        <td>Accessories</td>
+                        <td>1,782</td>
+                        <td>$1,054,782</td>
+                        <td>653</td>
+                        <td>$592</td>
+                    </tr>
+                    <tr>
+                        <td>Bedding</td>
+                        <td>867</td>
+                        <td>$669,513</td>
+                        <td>366</td>
+                        <td>$772</td>
+                    </tr>
+                    <tr>
+                        <td>Outdoor</td>
+                        <td>486</td>
+                        <td>$478,052</td>
+                        <td>239</td>
+                        <td>$984</td>
+                    </tr>
+                    <tr>
+                        <td>Rugs</td>
+                        <td>401</td>
+                        <td>$241,257</td>
+                        <td>191</td>
+                        <td>$602</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 class="subsection-title">Collection Performance (eCat Orders, LTM)</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Collection</th>
+                        <th>Item Count</th>
+                        <th>Unique Orders</th>
+                        <th>Total Value</th>
+                        <th>% of eCat GMV</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Coastal Collection</strong></td>
+                        <td>247</td>
+                        <td>2,548</td>
+                        <td><strong>$2,562,542</strong></td>
+                        <td><strong>34%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Modern Collection</td>
+                        <td>139</td>
+                        <td>1,426</td>
+                        <td>$1,161,488</td>
+                        <td>16%</td>
+                    </tr>
+                    <tr>
+                        <td>Transitional</td>
+                        <td>123</td>
+                        <td>1,209</td>
+                        <td>$841,509</td>
+                        <td>11%</td>
+                    </tr>
+                    <tr>
+                        <td>Organic Collection</td>
+                        <td>115</td>
+                        <td>989</td>
+                        <td>$849,549</td>
+                        <td>11%</td>
+                    </tr>
+                    <tr>
+                        <td>Contemporary</td>
+                        <td>110</td>
+                        <td>1,051</td>
+                        <td>$770,879</td>
+                        <td>10%</td>
+                    </tr>
+                    <tr>
+                        <td>Traditional</td>
+                        <td>97</td>
+                        <td>887</td>
+                        <td>$685,131</td>
+                        <td>9%</td>
+                    </tr>
+                    <tr>
+                        <td>Glamorous</td>
+                        <td>90</td>
+                        <td>744</td>
+                        <td>$667,982</td>
+                        <td>9%</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>Collection Dominance:</strong> Coastal Collection dominates eCat orders, generating <span class="data-point">$2.56M (34% of eCat GMV)</span> across 2,548 orders. The high order frequency (37% of all eCat orders) indicates it is a well-marketed, easily discoverable collection that resonates with your buyer base. Historical ERP data shows Coastal Collection has generated <span class="data-point">$18.6M in all-time sales</span>, confirming it remains your bestselling line.
+            </div>
+        </div>
+        
+        <div class="section" id="peer-benchmarking">
+            <h2 class="section-title">Peer Benchmarking</h2>
+            
+            <h3 class="subsection-title">Segment Comparison: Platform-Embedded</h3>
+            <span class="source-tag">Source: Cross-instance intelligence (33 peer clients, Mar 2026)</span>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Acme Co</th>
+                        <th>Segment Median</th>
+                        <th>vs. Peers</th>
+                        <th>Peer Standing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Orders (LTM)</strong></td>
+                        <td>6,842</td>
+                        <td>2,986</td>
+                        <td><strong>+129.2%</strong></td>
+                        <td><span class="badge badge-success">Top Performer</span></td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>Logins (LTM)</strong></td>
+                        <td>8,016</td>
+                        <td>6,368</td>
+                        <td><strong>+25.9%</strong></td>
+                        <td><span class="badge badge-success">Above Median</span></td>
+                    </tr>
+                    <tr style="background: #f0fff4;">
+                        <td><strong>MRR</strong></td>
+                        <td>$2,515</td>
+                        <td>$1,685</td>
+                        <td><strong>+49.3%</strong></td>
+                        <td><span class="badge badge-success">Above Median</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">Top Performer Status</div>
+                <p>You are a <strong>Top Performer</strong> in the Platform-Embedded segment, with order volume 129% above the median (6,842 vs. 2,986 orders) among your 33 segment peers. Your login activity (8,016) is 26% above median (6,368), and your MRR ($2,515) is 49% above median ($1,685), indicating you are a larger, more engaged client within the segment.</p>
+            </div>
+            
+            <h3 class="subsection-title">Segment Benchmarks: Platform-Embedded (Mar 2026)</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>P25</th>
+                        <th>Median</th>
+                        <th>P75</th>
+                        <th>P90</th>
+                        <th>Acme Co</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Orders (LTM)</strong></td>
+                        <td>1,205</td>
+                        <td>2,986</td>
+                        <td>6,109</td>
+                        <td>7,760</td>
+                        <td><strong style="color: var(--success);">6,842</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Logins (LTM)</strong></td>
+                        <td>4,640</td>
+                        <td>6,368</td>
+                        <td>8,568</td>
+                        <td>—</td>
+                        <td><strong style="color: var(--success);">8,016</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Product Searches (LTM)</strong></td>
+                        <td>25,709</td>
+                        <td>35,609</td>
+                        <td>52,644</td>
+                        <td>—</td>
+                        <td>27,214</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MRR</strong></td>
+                        <td>$0</td>
+                        <td>$1,685</td>
+                        <td>$2,030</td>
+                        <td>—</td>
+                        <td><strong style="color: var(--success);">$2,515</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ARR</strong></td>
+                        <td>$0</td>
+                        <td>$16,980</td>
+                        <td>$25,760</td>
+                        <td>—</td>
+                        <td><strong style="color: var(--success);">$30,180</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="insight-box">
+                <strong>Percentile Ranking:</strong> You rank between the <span class="data-point">75th and 90th percentiles</span> for order volume, above the median for login activity, and your ARR ($30,180) significantly exceeds the 75th percentile ($25,760), indicating you are a larger, more established client within the Platform-Embedded segment.
+            </div>
+        </div>
+        
+        <div class="section" id="recommendations">
+            <h2 class="section-title">Recommendations & Next Steps</h2>
+            
+            <div class="recommendations">
+                <div class="recommendation-card">
+                    <span class="badge badge-danger priority">High Priority</span>
+                    <h3>1. Launch Dormant Customer Reactivation Campaign</h3>
+                    <p><strong>Issue:</strong> 167 previously active buyers have not ordered in 90+ days, representing $487K in prior GMV.</p>
+                    <p style="margin-top: 1rem;"><strong>Recommended Action:</strong></p>
+                    <ul>
+                        <li>Prioritize outreach to high-value dormant accounts: Premier Design Partners ($63,623 prior GMV, 145 days dormant), Coastal Elite Showroom ($57,512, 341 days), Metropolitan Home Group ($52,203, 119 days)</li>
+                        <li>Focus first on accounts dormant 90-180 days (highest reactivation probability) before they cross the statistical threshold where recovery rates drop below 20%</li>
+                        <li>Consider automated email campaigns to re-engage dormant buyers with new product launches, seasonal promotions, or personalized recommendations</li>
+                        <li>Assign dormant accounts to territory reps for direct outreach calls</li>
+                    </ul>
+                    <div class="impact">
+                        Expected Impact: 25% reactivation rate (42 accounts) × $2,913 average prior order value = $122K recovered GMV
+                    </div>
+                </div>
+                
+                <div class="recommendation-card">
+                    <span class="badge badge-danger priority">High Priority</span>
+                    <h3>2. Expand eCat Adoption in Underperforming Territories</h3>
+                    <p><strong>Issue:</strong> 5,351 ERP customers (81% of your base) have not yet placed eCat orders, with California (896 accounts), Florida (620), Texas (419), New York (315), and Georgia (271) as the largest pools.</p>
+                    <p style="margin-top: 1rem;"><strong>Recommended Action:</strong></p>
+                    <ul>
+                        <li>Audit whether the 5,351 "ERP-only" customers are active, creditworthy accounts or legacy records that should be archived</li>
+                        <li>For states with large untapped ERP bases but low penetration (e.g., California 896 accounts with 15% penetration), consider targeted customer onboarding campaigns to promote Online Ordering self-service</li>
+                        <li>Focus on high-performing states (North Carolina 45% penetration, New Jersey 43%, Delaware 66%) as models for best practices in customer activation</li>
+                        <li>Identify which sales reps cover underperforming territories and assess whether they have been adequately trained on iPad ordering workflows</li>
+                    </ul>
+                    <div class="impact">
+                        Expected Impact: Increasing California penetration from 15% to 30% (NC benchmark) = +158 active customers = $575K potential GMV
+                    </div>
+                </div>
+                
+                <div class="recommendation-card">
+                    <span class="badge badge-danger priority">High Priority</span>
+                    <h3>3. Immediate Outreach to Lapsed High-Value Customers</h3>
+                    <p><strong>Issue:</strong> 20 customers with $50K+ trailing GMV have not ordered in 90+ days, representing $1.1M in at-risk annual revenue.</p>
+                    <p style="margin-top: 1rem;"><strong>Recommended Action:</strong></p>
+                    <ul>
+                        <li>Assign these accounts to senior reps or account managers for immediate personal outreach</li>
+                        <li>Investigate whether these customers have shifted to other ordering channels (phone, fax, direct sales) or have genuinely churned</li>
+                        <li>Premier Design Partners ($63,623, 145 days dormant) and Metropolitan Home Group ($52,203, 119 days) are approaching the 180-day threshold — you have 35-61 days before these accounts become significantly harder to recover</li>
+                        <li>Offer incentives (free shipping, early access to new collections, dedicated rep support) to re-engage these high-value relationships</li>
+                    </ul>
+                    <div class="impact">
+                        Expected Impact: 50% reactivation rate (10 accounts) × $55,000 average prior GMV = $550K recovered GMV
+                    </div>
+                </div>
+                
+                <div class="recommendation-card">
+                    <span class="badge badge-warning priority">Medium Priority</span>
+                    <h3>4. Investigate Portal Traffic Decline</h3>
+                    <p><strong>Issue:</strong> Your Private Storefront traffic has declined 27% vs. the prior period, despite healthy engagement metrics (7.9-minute sessions, 14.7% bounce rate).</p>
+                    <p style="margin-top: 1rem;"><strong>Recommended Action:</strong></p>
+                    <ul>
+                        <li>Review marketing campaigns, email newsletters, or dealer communications that may have driven prior traffic but were paused or reduced</li>
+                        <li>Analyze whether the traffic decline correlates with increased iPad or Online Ordering adoption (i.e., customers shifting from browsing to ordering — a positive shift)</li>
+                        <li>Consider whether seasonal factors (e.g., Q1 slowdown in the home furnishings industry) explain the decline</li>
+                        <li>Audit changes to SEO, catalog access policies, or dealer communications that may have reduced inbound traffic</li>
+                    </ul>
+                    <div class="impact">
+                        Expected Impact: Reversing the 27% decline would restore ~40 daily visitors = 1,200 monthly sessions = potential for 24-36 additional orders per month
+                    </div>
+                </div>
+                
+                <div class="recommendation-card">
+                    <span class="badge badge-warning priority">Medium Priority</span>
+                    <h3>5. Refresh Kit Items Configuration</h3>
+                    <p><strong>Issue:</strong> Kit Items were last updated February 18, 2026 (42 days ago), while Options were refreshed March 27 (4 days ago) — a 37-day gap.</p>
+                    <p style="margin-top: 1rem;"><strong>Recommended Action:</strong></p>
+                    <ul>
+                        <li>Schedule an immediate kit items refresh to ensure configured products reflect current option definitions</li>
+                        <li>With 191 kit-based orders placed in the trailing 12 months, even a 5% error rate due to stale configuration data represents ~10 orders at risk of pricing mistakes or configuration failures</li>
+                        <li>Establish a policy to refresh kit items within 48 hours of any options update to prevent future configuration drift</li>
+                    </ul>
+                    <div class="impact">
+                        Expected Impact: Prevent pricing errors and customer complaints on configured orders; estimated margin protection of $25K-$50K annually
+                    </div>
+                </div>
+                
+                <div class="recommendation-card">
+                    <span class="badge badge-warning priority">Medium Priority</span>
+                    <h3>6. Prioritize Restock of Top Out-of-Stock Items</h3>
+                    <p><strong>Issue:</strong> Your top 10 out-of-stock items represent $918K in cumulative historical demand and are currently unavailable to buyers.</p>
+                    <p style="margin-top: 1rem;"><strong>Recommended Action:</strong></p>
+                    <ul>
+                        <li>Work with your supply chain team to expedite inbound shipments for items with scheduled receipt dates (April-June 2026)</li>
+                        <li>For items with no scheduled restock (e.g., AC-4728-NA with $389K historical demand), evaluate whether these are discontinued lines or if supply chain issues are preventing replenishment</li>
+                        <li>Consider whether high-demand out-of-stock items should be flagged as "made to order" in the catalog to manage buyer expectations</li>
+                    </ul>
+                    <div class="impact">
+                        Expected Impact: If these items represent 10% of current run-rate demand, restocking them could unlock $92K in quarterly revenue
+                    </div>
+                </div>
+                
+                <div class="recommendation-card">
+                    <span class="badge badge-info priority">Low Priority</span>
+                    <h3>7. Complete Catalog Asset Upload</h3>
+                    <p><strong>Issue:</strong> 57 active SKUs (3% of catalog) are missing images or pricing, which may prevent reps from confidently presenting these items to buyers.</p>
+                    <p style="margin-top: 1rem;"><strong>Recommended Action:</strong></p>
+                    <ul>
+                        <li>Prioritize asset uploads for the 57 incomplete SKUs to achieve 100% catalog completeness</li>
+                        <li>Focus first on items that appear in your ERP sales history or customer favorites lists, as these are more likely to be actively sold</li>
+                        <li>Consider whether any of the 57 incomplete items are discontinued products that should be hidden rather than receiving new photography</li>
+                    </ul>
+                    <div class="impact">
+                        Expected Impact: Products with complete assets convert at ~30% higher rates; completing these 57 items could generate $15K-$30K in incremental GMV annually
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Summary: Total Opportunity Value</h2>
+            
+            <div style="background: linear-gradient(135deg, #f0fff4 0%, #d4f4dd 100%); padding: 2.5rem; border-radius: 12px; border: 3px solid var(--success);">
+                <h3 style="color: var(--success); font-size: 1.8rem; margin-bottom: 1.5rem; text-align: center;">Combined Revenue Opportunity</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--success);">$487K</div>
+                        <div style="font-size: 1rem; color: var(--text); margin-top: 0.5rem;">Dormant Customer Reactivation</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--success);">$1.68M</div>
+                        <div style="font-size: 1rem; color: var(--text); margin-top: 0.5rem;">Geographic Expansion</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--success);">$550K</div>
+                        <div style="font-size: 1rem; color: var(--text); margin-top: 0.5rem;">High-Value Customer Recovery</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2.5rem; padding-top: 2rem; border-top: 2px solid rgba(39, 174, 96, 0.3);">
+                    <div style="font-size: 3rem; font-weight: 700; color: var(--success);">$2.72M</div>
+                    <div style="font-size: 1.2rem; color: var(--text); margin-top: 0.5rem; font-weight: 600;">Total Addressable Opportunity</div>
+                    <p style="font-size: 0.95rem; color: var(--text-light); margin-top: 1rem;">Based on conservative reactivation rates and peer-benchmark penetration targets</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Report Generated: March 31, 2026</p>
+            <p>Data Sources: eCat Platform Database, ERP-Synced Order History, Mixpanel Behavioral Analytics, Cross-Instance Intelligence Layer</p>
+            <p style="margin-top: 1rem;">Prepared By: SuperCat Insights Team</p>
+        </div>
+    </div>
+</body>
+</html>
